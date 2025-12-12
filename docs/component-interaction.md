@@ -1,3 +1,4 @@
+```mermaid
 graph LR
     subgraph "Core 0 - Network Thread"
         A[Wi-Fi<br/>Connection]
@@ -42,3 +43,4 @@ graph LR
     style C fill:#fff9c4
     style E fill:#ffe0b2
     style H fill:#f3e5f5
+```
