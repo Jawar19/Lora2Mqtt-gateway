@@ -1,0 +1,62 @@
+sequenceDiagram
+    participant User as User Browser
+    participant Web as WebServer
+    participant Scan as ScannerMode
+    participant LoRa as LoRaHandler
+    participant Node as Unknown Node
+    participant Cfg as ConfigManager
+
+    Note over User,Cfg: Scanner Mode - Device Discovery
+
+    User->>Web: Enable Scanner Mode
+    activate Web
+    Web->>Scan: Enable()
+    activate Scan
+    Scan->>LoRa: Disable Whitelist Filter
+    Web-->>User: Scanner Active
+    deactivate Web
+
+    Node->>LoRa: LoRa Packet (Any ID)
+    activate LoRa
+    LoRa->>Scan: New Packet Received
+    Scan->>Scan: Add to Discovered List
+    Scan->>Scan: Store RSSI, Timestamp
+    deactivate LoRa
+
+    User->>Web: GET /api/scanner/devices
+    activate Web
+    Web->>Scan: Get Discovered Devices
+    Scan-->>Web: Device List (ID, RSSI, Last Seen)
+    Web-->>User: JSON Response
+    deactivate Web
+
+    User->>Web: POST /api/whitelist/add {id: 1234}
+    activate Web
+    Web->>Cfg: Add to Whitelist
+    activate Cfg
+    Cfg->>Cfg: Update Whitelist
+    Cfg->>Cfg: Write to Flash
+    Cfg-->>Web: Success
+    deactivate Cfg
+    Web-->>User: Device Whitelisted
+    deactivate Web
+
+    User->>Web:  POST /api/devices/config {node_id, sensors... }
+    activate Web
+    Web->>Cfg: Save Device Config
+    activate Cfg
+    Cfg->>Cfg: Parse JSON Mapping
+    Cfg->>Cfg: Write to Flash
+    Cfg-->>Web: Success
+    deactivate Cfg
+    Web-->>User: Config Saved
+    deactivate Web
+
+    User->>Web:  Disable Scanner Mode
+    activate Web
+    Web->>Scan: Disable()
+    Scan->>LoRa:  Enable Whitelist Filter
+    Scan->>Scan: Clear Discovered List
+    deactivate Scan
+    Web-->>User: Scanner Disabled
+    deactivate Web

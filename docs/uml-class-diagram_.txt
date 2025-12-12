@@ -1,0 +1,213 @@
+classDiagram
+    class LoRaHandler {
+        -spi_inst_t* spi
+        -uint8_t cs_pin
+        -uint8_t irq_pin
+        -bool rx_active
+        +init() bool
+        +send_packet(packet) bool
+        +receive_packet() lora_pkt_t*
+        +set_mode(mode) void
+        +handle_irq() void
+        -configure_radio() void
+        -read_register(addr) uint8_t
+        -write_register(addr, value) void
+    }
+
+    class lora_pkt_t {
+        +uint8_t m
+        +uint8_t n
+        +uint16_t id
+        +sensor_data_t sensors[MAX]
+        +uint8_t checksum
+        +validate_checksum() bool
+    }
+
+    class sensor_data_t {
+        +uint8_t type
+        +int16_t value
+    }
+
+    class MQTTHandler {
+        -mqtt_client_t* client
+        -char* broker_addr
+        -uint16_t broker_port
+        -char* username
+        -char* password
+        -bool connected
+        +init(config) bool
+        +connect() bool
+        +disconnect() void
+        +publish(topic, payload) bool
+        +subscribe(topic, callback) bool
+        +publish_discovery(device) bool
+        -handle_connect_callback() void
+        -handle_message_callback() void
+    }
+
+    class WebServer {
+        -httpd_handle_t server
+        -uint16_t port
+        +init() bool
+        +start() bool
+        +stop() void
+        +register_uri_handler(uri, handler) void
+        -handle_config_page() void
+        -handle_scanner_page() void
+        -handle_api_config() void
+        -handle_api_whitelist() void
+        -handle_api_devices() void
+    }
+
+    class ConfigManager {
+        -uint32_t flash_offset
+        -whitelist_t whitelist
+        -device_config_t devices[MAX]
+        -wifi_config_t wifi
+        -mqtt_config_t mqtt
+        +load_config() bool
+        +save_config() bool
+        +load_whitelist() bool
+        +save_whitelist() bool
+        +add_device(config) bool
+        +remove_device(id) bool
+        +get_device_config(id) device_config_t*
+        +is_whitelisted(id) bool
+        -read_flash(offset, buffer, size) void
+        -write_flash(offset, buffer, size) void
+        -erase_sector(offset) void
+    }
+
+    class whitelist_t {
+        +uint16_t device_ids[MAX]
+        +uint16_t count
+        +add_id(id) bool
+        +remove_id(id) bool
+        +contains(id) bool
+    }
+
+    class device_config_t {
+        +uint16_t node_id
+        +char name[32]
+        +sensor_mapping_t sensors[MAX]
+        +uint8_t sensor_count
+        +to_json() char*
+        +from_json(json) bool
+    }
+
+    class sensor_mapping_t {
+        +char label[32]
+        +uint8_t byte_offset
+        +uint8_t length
+        +char format[16]
+        +float multiplier
+        +char mqtt_topic[128]
+    }
+
+    class PacketDecoder {
+        -ConfigManager* config_mgr
+        +decode_packet(packet) decoded_data_t*
+        +validate_packet(packet) bool
+        -apply_sensor_mapping(raw, mapping) float
+        -format_value(raw, format, multiplier) float
+    }
+
+    class decoded_data_t {
+        +uint16_t node_id
+        +sensor_value_t values[MAX]
+        +uint8_t count
+        +uint32_t timestamp
+    }
+
+    class sensor_value_t {
+        +char label[32]
+        +float value
+        +char mqtt_topic[128]
+    }
+
+    class ScannerMode {
+        -bool active
+        -discovered_device_t devices[MAX]
+        -uint16_t device_count
+        +enable() void
+        +disable() void
+        +is_active() bool
+        +add_discovered(packet) void
+        +get_devices() discovered_device_t*
+        +clear() void
+    }
+
+    class discovered_device_t {
+        +uint16_t node_id
+        +uint8_t packet_count
+        +uint32_t last_seen
+        +int8_t rssi
+        +lora_pkt_t last_packet
+    }
+
+    class wifi_config_t {
+        +char ssid[32]
+        +char password[64]
+        +bool ap_mode
+    }
+
+    class mqtt_config_t {
+        +char broker[64]
+        +uint16_t port
+        +char username[32]
+        +char password[64]
+        +char base_topic[64]
+    }
+
+    class HomeAssistantIntegration {
+        -MQTTHandler* mqtt
+        +publish_discovery_config(device) bool
+        +publish_sensor_state(topic, value) bool
+        -build_discovery_payload(sensor) char*
+        -build_state_payload(value) char*
+    }
+
+    class GatewayMain {
+        -LoRaHandler lora
+        -MQTTHandler mqtt
+        -WebServer web
+        -ConfigManager config
+        -PacketDecoder decoder
+        -ScannerMode scanner
+        +init() bool
+        +run() void
+        -core0_main() void
+        -core1_main() void
+        -handle_lora_packet(packet) void
+        -publish_sensor_data(data) void
+    }
+
+    %% Relationships
+    GatewayMain *-- LoRaHandler
+    GatewayMain *-- MQTTHandler
+    GatewayMain *-- WebServer
+    GatewayMain *-- ConfigManager
+    GatewayMain *-- PacketDecoder
+    GatewayMain *-- ScannerMode
+
+    LoRaHandler .. > lora_pkt_t :  creates
+    lora_pkt_t *-- sensor_data_t
+
+    PacketDecoder --> ConfigManager : uses
+    PacketDecoder .. > decoded_data_t : creates
+    decoded_data_t *-- sensor_value_t
+
+    ConfigManager *-- whitelist_t
+    ConfigManager *-- device_config_t
+    ConfigManager *-- wifi_config_t
+    ConfigManager *-- mqtt_config_t
+    device_config_t *-- sensor_mapping_t
+
+    ScannerMode .. > discovered_device_t : manages
+    discovered_device_t *-- lora_pkt_t
+
+    MQTTHandler <-- HomeAssistantIntegration
+    HomeAssistantIntegration ..> device_config_t : uses
+
+    WebServer --> ConfigManager : reads/writes
+    WebServer --> ScannerMode : controls
