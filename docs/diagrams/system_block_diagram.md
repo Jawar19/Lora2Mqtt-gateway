@@ -1,3 +1,4 @@
+```mermaid
 graph TB
     subgraph "LoRa868-to-MQTT Gateway (Pico2 W RP235x)"
         subgraph "Hardware Layer"
@@ -64,3 +65,4 @@ graph TB
     style WEB fill:#fff9c4
     style LORA_H fill:#ffe0b2
     style CONFIG fill:#f1f8e9
+```
