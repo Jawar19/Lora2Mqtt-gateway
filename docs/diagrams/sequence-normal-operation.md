@@ -1,3 +1,4 @@
+```mermaid
 sequenceDiagram
     participant Node as LoRa Node
     participant SX127x as SX127x Module
@@ -49,3 +50,4 @@ sequenceDiagram
         LoRa->>LoRa: Drop Packet
         deactivate LoRa
     end
+```
