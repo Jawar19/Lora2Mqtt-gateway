@@ -1,3 +1,4 @@
+```mermaid
 classDiagram
     class LoRaHandler {
         -spi_inst_t* spi
@@ -211,3 +212,4 @@ classDiagram
 
     WebServer --> ConfigManager : reads/writes
     WebServer --> ScannerMode : controls
+```
