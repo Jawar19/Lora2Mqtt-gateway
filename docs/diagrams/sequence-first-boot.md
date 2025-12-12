@@ -1,3 +1,4 @@
+```mermaid
 sequenceDiagram
     participant Boot as Boot Sequence
     participant Cfg as ConfigManager
@@ -56,3 +57,4 @@ sequenceDiagram
     deactivate WiFi
 
     Boot->>Boot: Start Normal Operation
+```
