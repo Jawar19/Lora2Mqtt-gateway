@@ -1,3 +1,4 @@
+```mermaid
 sequenceDiagram
     participant User as User Browser
     participant Web as WebServer
@@ -60,3 +61,4 @@ sequenceDiagram
     deactivate Scan
     Web-->>User: Scanner Disabled
     deactivate Web
+```
