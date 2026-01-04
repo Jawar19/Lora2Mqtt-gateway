@@ -1,24 +1,17 @@
 include(FetchContent)
 find_package(Patch REQUIRED)
 
-message(STATUS "Fetching Pico SDK from source ...")
-FetchContent_Declare(
-  pico_sdk
-  GIT_REPOSITORY https://github.com/raspberrypi/pico-sdk.git
-  GIT_TAG 2.2.0
-  SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/extern/pico-sdk)
-
-FetchContent_Populate(pico_sdk)
-
-message(STATUS "Fetching MQTT-C from source ...")
-FetchContent_Declare(
-  mqtt_c
-  GIT_REPOSITORY https://github.com/LiamBindle/MQTT-C.git
-  GIT_TAG v1.1.6
-  SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/extern/mqtt-c)
-FetchContent_MakeAvailable(mqtt_c)
-
 message(STATUS "Fetching cJSON (JSON library) from source ...")
+
+set(ENABLE_CJSON_TEST
+    OFF
+    CACHE BOOL "Disable cJSON tests")
+set(BUILD_SHARED_LIBS
+    OFF
+    CACHE BOOL "Build static libraries only")
+set(BUILD_SHARED_AND_STATIC_LIBS
+    OFF
+    CACHE BOOL "Disable shared libs")
 
 FetchContent_Declare(
   cJSON

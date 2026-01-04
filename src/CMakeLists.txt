@@ -4,10 +4,10 @@ target_include_directories(pico_lora_mqtt_gateway
                            PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 target_link_libraries(
-  pico_lora_mqtt_gateway pico_stdlib pico_wifi
-  pico_cyw43_arch_lwip_threadsafe_background pico_lwip_mqtt pico_lwip)
+  pico_lora_mqtt_gateway pico_stdlib pico_cyw43_arch_lwip_threadsafe_background
+  pico_lwip_http pico_lwip_mqtt hardware_flash)
 
-target_link_libraries(pico_lora_mqtt_gateway paho_mqtt_embedded_c cjson)
+target_link_libraries(pico_lora_mqtt_gateway cjson)
 
 # USB serial output
 pico_enable_stdio_usb(pico_lora_mqtt_gateway 1)
