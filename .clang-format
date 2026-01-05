@@ -1,0 +1,21 @@
+# For aligning the '=' in assignments
+AlignConsecutiveAssignments: 
+  Enabled: true
+  AcrossEmptyLines: false
+  AcrossComments:  false
+  AlignCompound: false
+  PadOperators: true
+
+# For aligning variable names in declarations
+AlignConsecutiveDeclarations:
+  Enabled: true
+  AcrossEmptyLines: false
+  AcrossComments: false
+  AlignFunctionPointers: false
+  PadOperators: false
+
+# Align trailing comments
+AlignTrailingComments: true
+
+# Align escaped newlines in macros
+AlignEscapedNewlines: Left
