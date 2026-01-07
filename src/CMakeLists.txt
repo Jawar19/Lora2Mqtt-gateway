@@ -1,4 +1,4 @@
-add_executable(pico_lora_mqtt_gateway main.cpp)
+add_executable(pico_lora_mqtt_gateway main.cpp config_manager.cpp)
 
 target_include_directories(pico_lora_mqtt_gateway
                            PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
@@ -10,8 +10,8 @@ target_link_libraries(
 target_link_libraries(pico_lora_mqtt_gateway cjson)
 
 # USB serial output
-pico_enable_stdio_usb(pico_lora_mqtt_gateway 1)
-pico_enable_stdio_uart(pico_lora_mqtt_gateway 0)
+pico_enable_stdio_usb(pico_lora_mqtt_gateway 0)
+pico_enable_stdio_uart(pico_lora_mqtt_gateway 1)
 
 # Generate UF2 firmware
 pico_add_uf2_output(pico_lora_mqtt_gateway)

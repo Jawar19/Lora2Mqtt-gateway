@@ -19,3 +19,5 @@ AlignTrailingComments: true
 
 # Align escaped newlines in macros
 AlignEscapedNewlines: Left
+
+AllowShortFunctionsOnASingleLine: Inline
