@@ -84,6 +84,9 @@ bool ConfigManager::validate_header() {
 
 uint32_t ConfigManager::calculate_crc32(const uint8_t *data, size_t len) {
   uint32_t crc = 0xFFFFFFFF;
+  if (len == 0) {
+    return crc;
+  }
 
   for (size_t i = 0; i < len; ++i) {
     uint8_t index = (crc ^ data[i]) & 0xFF;

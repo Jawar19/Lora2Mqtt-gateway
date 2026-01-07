@@ -44,6 +44,7 @@ else()
 endif()
 
 add_subdirectory(src)
+add_subdirectory(test EXCLUDE_FROM_ALL)
 
 message(STATUS "")
 message(STATUS "=== LoRa868-to-MQTT Gateway Configuration ===")

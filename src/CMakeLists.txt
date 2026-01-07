@@ -1,4 +1,6 @@
-add_executable(pico_lora_mqtt_gateway main.cpp config_manager.cpp)
+include(${CMAKE_SOURCE_DIR}/cmake/files.cmake)
+
+add_executable(pico_lora_mqtt_gateway main.cpp ${SRC_FILES})
 
 target_include_directories(pico_lora_mqtt_gateway
                            PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
