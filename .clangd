@@ -1,26 +1,16 @@
-CompileFlags:
+CompileFlags: 
+  CompilationDatabase: build
   Add:
-    [
-      "-isystem",
-      "/usr/lib/gcc/arm-none-eabi/14.2.0/include",
-      "-isystem",
-      "/usr/lib/gcc/arm-none-eabi/14.2.0/include-fixed",
-      "-isystem",
-      "/usr/lib/gcc/arm-none-eabi/14.2.0/",
-      "-isystem",
-      "/usr/arm-none-eabi/include",
-      "-isystem",
-      "/usr/arm-none-eabi/include/c++/14.2.0",
-      "-isystem",
-      "/usr/arm-none-eabi/include/c++/14.2.0/arm-none-eabi",
-      "-isystem",
-      "/usr/arm-none-eabi/include/c++/14.2.0/backward",
-    ]
+    - --sysroot=/usr/arm-none-eabi  # ← ARM sysroot
+    - -I/usr/arm-none-eabi/include/c++/14.2.0
+    - -I/usr/arm-none-eabi/include/c++/14.2.0/arm-none-eabi
 
 Diagnostics:
   Suppress:
     - modernize-use-trailing-return-type
     - readability-implicit-bool-conversion
+    - readability-isolate-declaration
+    - bugprone-easily-swappable-parameters
   # Optional: suppress other style warnings common in embedded
   # UnusedIncludes: None
   # MissingIncludes: None

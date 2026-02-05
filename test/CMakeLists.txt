@@ -22,8 +22,9 @@ target_link_libraries(${TEST_NAME} PRIVATE pico_stdlib CppUTest::CppUTest
                                            CppUTest::CppUTestExt)
 
 target_compile_definitions(
-  ${TEST_NAME} PRIVATE PICO_CXX_DISABLE_ALLOCATION_OVERRIDES
-                       CPPUTEST_HAVE_EXCEPTIONS=1)
+  ${TEST_NAME}
+  PRIVATE UNIT_TEST=1 # ← This enables friend class
+          PICO_CXX_DISABLE_ALLOCATION_OVERRIDES CPPUTEST_HAVE_EXCEPTIONS=1)
 
 # enable usb output, disable uart output
 pico_enable_stdio_usb(${TEST_NAME} 1)

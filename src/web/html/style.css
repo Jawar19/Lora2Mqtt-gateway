@@ -1,0 +1,82 @@
+:root {
+  --primary: #007bff;
+  --success: #28a745;
+  --bg: #f4f7f6;
+  --card: #ffffff;
+  --text: #333;
+}
+
+body {
+  font-family: -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+}
+.card {
+  width: 90%;
+  max-width: 400px;
+  background: var(--card);
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+}
+h2 {
+  margin-top: 0;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 10px;
+  font-size: 1.5rem;
+}
+.status {
+  background: #eee;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  margin-bottom: 20px;
+  border-left: 4px solid var(--primary);
+}
+label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+select,
+input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+.btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.btn-connect {
+  background: var(--success);
+  margin-bottom: 10px;
+}
+.btn-rescan {
+  background: var(--primary);
+}
+.btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+footer {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 0.7rem;
+  color: #999;
+}

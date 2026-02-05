@@ -1,0 +1,11 @@
+---
+# Inherit from parent but disable aggressive alignment for tests
+BasedOnStyle:  LLVM
+
+# Disable alignment that causes issues in tests
+AlignConsecutiveAssignments: None
+AlignConsecutiveDeclarations: None
+AlignTrailingComments: false
+
+ColumnLimit: 100
+IndentWidth: 2
