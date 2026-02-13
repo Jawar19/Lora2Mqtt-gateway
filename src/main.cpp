@@ -4,6 +4,7 @@
 #include <hardware/regs/intctrl.h>
 #include <hardware/structs/io_bank0.h>
 #include <hardware/uart.h>
+#include <memory>
 #include <pico/stdio.h>
 #include <pico/stdio_uart.h>
 
@@ -69,15 +70,14 @@ auto main(int argc, char *argv[]) -> int {
 
   stdio_uart_init_full(UART_ID, BAUD_RATE, UART_TX_PIN, UART_RX_PIN);
 
-  auto uart_cmd = UARTCommandHandler(UART_ID);
-
   sleep_ms(1000);
   printf("\n\n*==============================*\n");
   printf("* Launching Lora2MQTT Gateway! *\n");
   printf("*==============================*\n\n");
 
-  auto &cfg = ConfigManager::instance();
-  // cache_valid_ = false (from constructor)
+  auto                         uart_cmd = UARTCommandHandler(UART_ID);
+  auto                        &cfg      = ConfigManager::instance();
+  std::unique_ptr<WifiManager> wifi     = std::make_unique<WifiManager>();
 
   if (!cfg.exists()) {
     cfg.create_defaults(); // Writes to flash
@@ -99,10 +99,9 @@ auto main(int argc, char *argv[]) -> int {
       if (cfg.is_ApMode()) {
         printf("Creating AP for initial configuration!\n");
         printf("SSID: %s\n", cfg.wifi().ssid.data());
-        WifiManager::init(WifiMode::AP);
 
-        if (WifiManager::start_ap(cfg.wifi().ssid.data(),
-                                  cfg.wifi().password.data())) {
+        if (wifi->start_ap(cfg.wifi().ssid.data(),
+                           cfg.wifi().password.data())) {
           state = WEBSERVER_INITIALIZE;
         } else {
           state = SHUTDOWN;
@@ -117,8 +116,8 @@ auto main(int argc, char *argv[]) -> int {
     case SHUTDOWN:
       printf("Shutdown called, cleaning up\n");
       irq_set_enabled(UART0_IRQ, false);
-      WifiManager::disable();
-      WifiManager::deinit();
+      wifi->disable();
+      wifi->deinit();
       break;
 
     default:
