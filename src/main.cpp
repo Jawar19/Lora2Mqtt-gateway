@@ -23,7 +23,9 @@
 using state_t = enum {
   BOOTING,
   INITIAL_SETUP,
-  SCANNER_MODE,
+  WIFI_START_SCAN,
+  WIFI_IS_SCANNING,
+  WIFI_START_AP,
   WEBSERVER_INITIALIZE,
   SHUTDOWN,
 };
@@ -97,21 +99,39 @@ auto main(int argc, char *argv[]) -> int {
     case BOOTING:
       printf("BOOTING\n");
       if (cfg.is_ApMode()) {
-        printf("Creating AP for initial configuration!\n");
-        printf("SSID: %s\n", cfg.wifi().ssid.data());
-
-        if (wifi->start_ap(cfg.wifi().ssid.data(),
-                           cfg.wifi().password.data())) {
-          state = WEBSERVER_INITIALIZE;
-        } else {
-          state = SHUTDOWN;
-        }
+        state = WIFI_START_SCAN;
       }
       break;
     case WEBSERVER_INITIALIZE:
       // TODO Initialise the webserver and serve the Connect to wifi page
       break;
-    case SCANNER_MODE:
+    case WIFI_START_SCAN:
+      wifi->init(WifiMode::MODE_STA);
+      if (!wifi->start_scan()) {
+        state = SHUTDOWN;
+        break;
+      }
+      state = WIFI_IS_SCANNING;
+      break;
+    case WIFI_IS_SCANNING:
+      if (!WifiManager::is_scanning()) {
+        for (WifiNetwork &net : WifiManager::scan_result) {
+          printf("SSID:%32s | Channel: %d | RSSI: %d\n", net.ssid.c_str(),
+                 net.channel, net.rssi);
+        }
+        state = WIFI_START_AP;
+      }
+      break;
+    case WIFI_START_AP:
+      printf("Creating AP for initial configuration!\n");
+      printf("SSID: %s\n", cfg.wifi().ssid.data());
+      wifi->init(WifiMode::MODE_AP);
+      if (wifi->start_ap(cfg.wifi().ssid.data(), cfg.wifi().password.data())) {
+        state = WEBSERVER_INITIALIZE;
+      } else {
+        state = SHUTDOWN;
+      }
+
       break;
     case SHUTDOWN:
       printf("Shutdown called, cleaning up\n");

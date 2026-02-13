@@ -2,6 +2,8 @@
 #define WIFI_MANAGER_H
 
 #include <cstdint>
+#include <string>
+#include <vector>
 
 #include <cyw43_ll.h>
 #include <lwip/ip4_addr.h>
@@ -33,6 +35,12 @@ struct BlinkConfig {
   uint32_t delay_ms = 200; ///< Delay between on/off (ms)
 };
 
+struct WifiNetwork {
+  std::string ssid;
+  int         rssi;
+  int         channel;
+};
+
 class WifiManager {
 
 public:
@@ -43,7 +51,12 @@ public:
   bool start_ap(const char *ssid, const char *password);
   bool connect_sta(const char *ssid, const char *password,
                    uint32_t timeout_ms = 10000);
-  void start_scan();
+
+  bool                            start_scan();
+  static bool                     is_scanning();
+  static std::vector<WifiNetwork> scan_result;
+
+  static void poll();
 
   void disable();
   void deinit();
@@ -55,8 +68,13 @@ public:
 private:
   static WifiManager *_instance;
 
+  static bool scan_finished;
+
   dhcp_server_t _dhcp_server;
   WifiState     _state = WifiState::STATE_OFF;
   WifiMode      _mode  = WifiMode::NONE;
+
+  static int scan_result_callback(void                         *env,
+                                  const cyw43_ev_scan_result_t *result);
 };
 #endif // !WIFI_MANAGER_H

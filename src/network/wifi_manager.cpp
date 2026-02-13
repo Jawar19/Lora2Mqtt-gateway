@@ -1,39 +1,29 @@
 #include "wifi_manager.h"
+#include <algorithm>
+#include <cassert>
+#include <cstdio>
 #include <cyw43.h>
+#include <vector>
 
-WifiManager *WifiManager::_instance = nullptr;
+WifiManager             *WifiManager::_instance = nullptr;
+std::vector<WifiNetwork> WifiManager::scan_result;
+bool                     WifiManager::scan_finished = true;
 
 WifiManager::WifiManager() {
-
+  printf("Wifi Ctor called\n");
   _instance = this;
   _state    = WifiState::STATE_OFF;
   _mode     = WifiMode::NONE;
 }
 
 WifiManager::~WifiManager() {
-  // 3. Clear the hook when the object is destroyed
+  printf("Wifi dtor called\n");
   if (_instance == this) {
     _instance = nullptr;
   }
   if (_state != WifiState::STATE_OFF) {
     deinit();
   }
-}
-
-void WifiManager::disable() {
-  printf("Wifi disable %s mode\n", (_mode == WifiMode::MODE_AP) ? "AP" : "STA");
-  if (_mode == WifiMode::MODE_AP) {
-    cyw43_arch_disable_ap_mode();
-  } else {
-    cyw43_arch_disable_sta_mode();
-  }
-  _state = WifiState::STATE_IDLE;
-}
-
-void WifiManager::deinit() {
-  printf("Deinit Wifi hardware\n");
-  cyw43_arch_deinit();
-  _state = WifiState::STATE_OFF;
 }
 
 bool WifiManager::init(WifiMode mode) {
@@ -79,6 +69,92 @@ bool WifiManager::start_ap(const char *ssid, const char *password) {
   return true;
 };
 
+bool WifiManager::connect_sta(const char *ssid, const char *password,
+                              uint32_t timeout_ms) {
+  assert("NOT IMPEMENTED YET!!");
+  return false;
+}
+
+bool WifiManager::start_scan() {
+  if (_mode != WifiMode::MODE_STA) {
+    printf("ERROR: Wifi is not in STA mode, cannot start SSID SCAN\n");
+    return false;
+  }
+  if (cyw43_wifi_scan_active(&cyw43_state)) {
+    printf("WARNING: Scanning already in progress!\n");
+    return true;
+  }
+  cyw43_wifi_scan_options_t opts = {0};
+  int err = cyw43_wifi_scan(&cyw43_state, &opts, nullptr, scan_result_callback);
+
+  if (err == 0) {
+    printf("WiFi Scan started...\n");
+    scan_finished = false;
+    return true;
+  }
+
+  return false;
+}
+
+bool WifiManager::is_scanning() {
+  return !scan_finished;
+}
+
+void WifiManager::poll() {
+  cyw43_poll();
+}
+
+void WifiManager::disable() {
+  printf("Wifi disable %s mode\n", (_mode == WifiMode::MODE_AP) ? "AP" : "STA");
+  if (_mode == WifiMode::MODE_AP) {
+    cyw43_arch_disable_ap_mode();
+  } else {
+    cyw43_arch_disable_sta_mode();
+  }
+  _state = WifiState::STATE_IDLE;
+}
+
+void WifiManager::deinit() {
+  printf("Deinit Wifi hardware\n");
+  cyw43_arch_deinit();
+  _state = WifiState::STATE_OFF;
+}
+
+WifiState WifiManager::get_state() const {
+  return this->_state;
+}
+
+int WifiManager::scan_result_callback(void                         *env,
+                                      const cyw43_ev_scan_result_t *result) {
+
+  if (!result) {
+    printf("DEBUG: Wifi scan completed, sorting\n");
+    std::sort(scan_result.begin(), scan_result.end(),
+              [](const WifiNetwork &a, const WifiNetwork &b) {
+                return a.rssi > b.rssi;
+              });
+    printf("DEBUG: Wifi sort completed\n");
+    scan_finished = true;
+    return 0;
+  }
+
+  auto existing_network = std::ranges::find_if(
+      scan_result.begin(), scan_result.end(), [&](const WifiNetwork &net) {
+        return net.ssid == (const char *)result->ssid;
+      });
+
+  if (existing_network != scan_result.end()) {
+    if (result->rssi > existing_network->rssi) {
+      existing_network->rssi    = result->rssi;
+      existing_network->channel = result->channel;
+    }
+  } else {
+    scan_result.push_back(
+        {(const char *)result->ssid, result->rssi, result->channel});
+  }
+  return 0;
+}
+
 //
 //   static bool connect_sta(const char *ssid, const char *password,
 //                           uint32_t timeout_ms = 10000) {
@@ -103,7 +179,8 @@ bool WifiManager::start_ap(const char *ssid, const char *password) {
 //   static bool is_connected() {
 //     struct netif *netif =
 //         &cyw43_state.netif[(_current_mode == WifiMode::AP) ? CYW43_ITF_AP
-//                                                            : CYW43_ITF_STA];
+//                                                            :
+//                                                            CYW43_ITF_STA];
 //     if (netif == nullptr) {
 //       return false;
 //     }
@@ -120,7 +197,8 @@ bool WifiManager::start_ap(const char *ssid, const char *password) {
 //   static const char *get_ip() {
 //     struct netif *netif =
 //         &cyw43_state.netif[(_current_mode == WifiMode::AP) ? CYW43_ITF_AP
-//                                                            : CYW43_ITF_STA];
+//                                                            :
+//                                                            CYW43_ITF_STA];
 //     return ip4addr_ntoa(netif_ip4_addr(netif));
 //   }
 //
