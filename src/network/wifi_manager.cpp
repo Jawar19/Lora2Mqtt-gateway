@@ -1,5 +1,4 @@
 #include "wifi_manager.h"
-#include <algorithm>
 #include <cassert>
 #include <cstdio>
 #include <cyw43.h>
@@ -7,7 +6,6 @@
 
 WifiManager             *WifiManager::_instance = nullptr;
 std::vector<WifiNetwork> WifiManager::scan_result;
-bool                     WifiManager::scan_finished = true;
 
 WifiManager::WifiManager() {
   printf("Wifi Ctor called\n");
@@ -89,7 +87,6 @@ bool WifiManager::start_scan() {
 
   if (err == 0) {
     printf("WiFi Scan started...\n");
-    scan_finished = false;
     return true;
   }
 
@@ -97,7 +94,7 @@ bool WifiManager::start_scan() {
 }
 
 bool WifiManager::is_scanning() {
-  return !scan_finished;
+  return cyw43_wifi_scan_active(&cyw43_state);
 }
 
 void WifiManager::poll() {
@@ -127,17 +124,9 @@ WifiState WifiManager::get_state() const {
 int WifiManager::scan_result_callback(void                         *env,
                                       const cyw43_ev_scan_result_t *result) {
 
-  if (!result) {
-    printf("DEBUG: Wifi scan completed, sorting\n");
-    std::sort(scan_result.begin(), scan_result.end(),
-              [](const WifiNetwork &a, const WifiNetwork &b) {
-                return a.rssi > b.rssi;
-              });
-    printf("DEBUG: Wifi sort completed\n");
-    scan_finished = true;
+  if (result->ssid_len < 1) {
     return 0;
   }
-
   auto existing_network = std::ranges::find_if(
       scan_result.begin(), scan_result.end(), [&](const WifiNetwork &net) {
         return net.ssid == (const char *)result->ssid;

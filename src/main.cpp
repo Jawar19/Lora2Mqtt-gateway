@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cctype>
 #include <hardware/gpio.h>
 #include <hardware/irq.h>
@@ -11,6 +12,7 @@
 #include <cstdio>
 
 #include "config_manager.h"
+#include <algorithm>
 #include <string>
 #include <uart_cmd_handler.h>
 #include <wifi_manager.h>
@@ -115,8 +117,12 @@ auto main(int argc, char *argv[]) -> int {
       break;
     case WIFI_IS_SCANNING:
       if (!WifiManager::is_scanning()) {
-        for (WifiNetwork &net : WifiManager::scan_result) {
-          printf("SSID:%32s | Channel: %d | RSSI: %d\n", net.ssid.c_str(),
+        std::ranges::sort(WifiManager::scan_result,
+                          [](const WifiNetwork &a, const WifiNetwork &b) {
+                            return a.rssi > b.rssi;
+                          });
+        for (const WifiNetwork &net : WifiManager::scan_result) {
+          printf("SSID:%32s | Channel: %2d | RSSI: %d\n", net.ssid.c_str(),
                  net.channel, net.rssi);
         }
         state = WIFI_START_AP;

@@ -68,8 +68,6 @@ public:
 private:
   static WifiManager *_instance;
 
-  static bool scan_finished;
-
   dhcp_server_t _dhcp_server;
   WifiState     _state = WifiState::STATE_OFF;
   WifiMode      _mode  = WifiMode::NONE;
