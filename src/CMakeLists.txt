@@ -13,7 +13,11 @@ target_include_directories(
 
 pico_add_library(pico_httpd_content NOFLAG)
 pico_set_lwip_httpd_content(
-  pico_httpd_content INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/web/html/style.css
+  pico_httpd_content
+  INTERFACE
+  ${CMAKE_CURRENT_SOURCE_DIR}/web/html/style.css
+  ${CMAKE_CURRENT_SOURCE_DIR}/web/html/index.shtml
+  ${CMAKE_CURRENT_SOURCE_DIR}/web/html/favicon.svg
   ${CMAKE_CURRENT_SOURCE_DIR}/web/html/wifi_initialize.shtml)
 
 target_link_libraries(

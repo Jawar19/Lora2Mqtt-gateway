@@ -3,36 +3,30 @@
 <head>
     <title>Pico2 W Wi-Fi Setup</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f4; }
-        .container { max-width: 400px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        h2 { color: #333; }
-        select, input[type="password"], button { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        .btn-submit { background-color: #28a745; color: white; border: none; cursor: pointer; }
-        .btn-rescan { background-color: #007bff; color: white; border: none; cursor: pointer; }
-        .status { font-size: 0.9em; color: #666; margin-bottom: 10px; }
-    </style>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
-    <div class="container">
+    <div class="card">
         <h2>Wi-Fi Configuration</h2>
-        <p class="status">Status: <!--#wifi_status--></p>
+        <div class="status">
+            Select a network and enter the password to connect the gateway to the internet.
+        </div>
         
         <form action="/wifi_connect.cgi" method="get">
-            <label for="ssid">Select Network:</label>
+            <label for="ssid">Select Network</label>
             <select name="ssid" id="ssid">
                 <!--#wifi_list-->
             </select>
             
-            <label for="pwd">Password:</label>
-            <input type="password" name="pwd" id="pwd" placeholder="Enter password">
+            <label for="pwd">Password</label>
+            <input type="password" name="pwd" id="pwd" placeholder="Enter password" required>
             
-            <button type="submit" class="btn-submit">Connect</button>
+            <button type="submit" class="btn btn-connect">Connect Gateway</button>
         </form>
-
-        <form action="/wifi_rescan.cgi" method="get">
-            <button type="submit" class="btn-rescan">Rescan Networks</button>
-        </form>
+        <footer>
+            LoRa2MQTT Gateway &bull; Pico2 W
+        </footer>
     </div>
 </body>
 </html>

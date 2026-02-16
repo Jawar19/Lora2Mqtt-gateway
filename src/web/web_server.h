@@ -1,15 +1,11 @@
 #ifndef web_server_H_
 #define web_server_H_
 
-#include <array>
-#include <cstdint>
 #include <lwip/arch.h>
 
 #include "wifi_manager.h"
 
 class WebServer {
-
-  static const std::array<const char *, 2> _ssi_tags;
 
 public:
   WebServer(WifiManager *mgr);
@@ -18,12 +14,17 @@ public:
 
   ~WebServer();
 
+  static void init();
+
+  static void set_setup_mode(bool is_setup);
+
 private:
-  WifiManager      *_wifi_mgr;
-  static WebServer *_instance;
-  static u16_t      _ssi_handler(int iIndex, char *pcInsert, int iInsertLen,
-                                 u16_t current_tag_part, u16_t *next_tag_part);
-  uint16_t          cgi_scan_wifi_handler();
+  WifiManager *_wifi_mgr;
+  static bool  _is_setup_mode;
+
+  static const char *_ssi_tags[2];
+  static u16_t       _ssi_handler(int iIndex, char *pcInsert, int iInsertLen,
+                                  u16_t current_tag_part, u16_t *next_tag_part);
 };
 
 #endif // web_server_H_

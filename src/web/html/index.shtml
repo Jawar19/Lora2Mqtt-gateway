@@ -1,0 +1,30 @@
+<!-- index.shtml -->
+<html><!DOCTYPE html>
+<head>
+    <title>LoRa Gateway Dashboard</title>
+
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+</head>
+<body>
+
+  <script>
+      // Wrapping in quotes makes it a string "1" or "0"
+      var isSetupRaw = "<!--#setup_flag-->";
+      
+      console.log("Raw SSI Value from Pico:", isSetupRaw);
+
+      // Convert string to a number for the check
+      if (parseInt(isSetupRaw) === 1) {
+          console.log("Redirecting to setup...");
+          window.location.href = "/wifi_initialize.shtml";
+      }
+    </script>   
+    <div class="card">
+        <h1>LoRa Gateway</h1>
+        <hr>
+        <p>Listening for LoRa packets...</p>
+    </div>
+
+</body>
+</html>

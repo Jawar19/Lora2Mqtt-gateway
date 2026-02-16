@@ -46,8 +46,13 @@
 #define LWIP_HTTPD 1
 #define LWIP_HTTPD_CGI 1
 #define LWIP_HTTPD_SSI 1
+#define LWIP_HTTPD_SUPPORT_SHTML 1
+#define LWIP_HTTPD_DYNAMIC_HEADERS 1
 #define LWIP_HTTPD_SSI_MULTIPART 1
+#define LWIP_HTTPD_SSI_INCLUDE_TAG 0
+#define LWIP_HTTPD_MAX_TAG_NAME_LEN 20
 #define HTTPD_SERVER_PORT 80
+
 #define HTTPD_FSDATA_FILE "pico_fsdata.inc"
 
 // Debug (disable for production)

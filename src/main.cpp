@@ -12,6 +12,7 @@
 #include <cstdio>
 
 #include "config_manager.h"
+#include "web_server.h"
 #include <algorithm>
 #include <string>
 #include <uart_cmd_handler.h>
@@ -29,6 +30,7 @@ using state_t = enum {
   WIFI_IS_SCANNING,
   WIFI_START_AP,
   WEBSERVER_INITIALIZE,
+  MONITORING,
   SHUTDOWN,
 };
 
@@ -82,6 +84,7 @@ auto main(int argc, char *argv[]) -> int {
   auto                         uart_cmd = UARTCommandHandler(UART_ID);
   auto                        &cfg      = ConfigManager::instance();
   std::unique_ptr<WifiManager> wifi     = std::make_unique<WifiManager>();
+  std::unique_ptr<WebServer>   web;
 
   if (!cfg.exists()) {
     cfg.create_defaults(); // Writes to flash
@@ -105,7 +108,12 @@ auto main(int argc, char *argv[]) -> int {
       }
       break;
     case WEBSERVER_INITIALIZE:
-      // TODO Initialise the webserver and serve the Connect to wifi page
+      if (!web) {
+        web = std::make_unique<WebServer>(wifi.get());
+        WebServer::init();
+        WebServer::set_setup_mode(true);
+      }
+      state = MONITORING;
       break;
     case WIFI_START_SCAN:
       wifi->init(WifiMode::MODE_STA);
@@ -137,7 +145,9 @@ auto main(int argc, char *argv[]) -> int {
       } else {
         state = SHUTDOWN;
       }
-
+      printf("Wifi start AP, new state: %u\n", state);
+      break;
+    case MONITORING:
       break;
     case SHUTDOWN:
       printf("Shutdown called, cleaning up\n");

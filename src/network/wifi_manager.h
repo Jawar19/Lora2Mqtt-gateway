@@ -62,6 +62,7 @@ public:
   void deinit();
 
   [[nodiscard]] WifiState get_state() const;
+  [[nodiscard]] WifiMode  get_mode() const;
 
   static WifiManager *get_callback_instance() { return _instance; }
 

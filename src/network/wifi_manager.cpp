@@ -120,6 +120,9 @@ void WifiManager::deinit() {
 WifiState WifiManager::get_state() const {
   return this->_state;
 }
+WifiMode WifiManager::get_mode() const {
+  return this->_mode;
+}
 
 int WifiManager::scan_result_callback(void                         *env,
                                       const cyw43_ev_scan_result_t *result) {
