@@ -69,7 +69,6 @@ bool WifiManager::start_ap(const char *ssid, const char *password) {
 
 bool WifiManager::connect_sta(const char *ssid, const char *password,
                               uint32_t timeout_ms) {
-  assert("NOT IMPEMENTED YET!!");
   return false;
 }
 

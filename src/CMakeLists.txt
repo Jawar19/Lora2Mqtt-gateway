@@ -16,9 +16,10 @@ pico_set_lwip_httpd_content(
   pico_httpd_content
   INTERFACE
   ${CMAKE_CURRENT_SOURCE_DIR}/web/html/style.css
-  ${CMAKE_CURRENT_SOURCE_DIR}/web/html/index.shtml
   ${CMAKE_CURRENT_SOURCE_DIR}/web/html/favicon.svg
-  ${CMAKE_CURRENT_SOURCE_DIR}/web/html/wifi_initialize.shtml)
+  ${CMAKE_CURRENT_SOURCE_DIR}/web/html/index.shtml
+  ${CMAKE_CURRENT_SOURCE_DIR}/web/html/wifi_initialize.shtml
+  ${CMAKE_CURRENT_SOURCE_DIR}/web/html/connecting.shtml)
 
 target_link_libraries(
   pico_lora_mqtt_gateway
@@ -28,6 +29,7 @@ target_link_libraries(
   pico_lwip_mqtt
   pico_httpd_content
   hardware_flash
+  hardware_watchdog
   cjson)
 
 # USB serial output (0 for disabled, 1 for enabled)

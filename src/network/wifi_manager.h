@@ -30,15 +30,18 @@ enum class WifiState : uint8_t {
   STATE_ERROR_UNKNOWN
 };
 
-struct BlinkConfig {
-  int      times    = 1;   ///< Number of blinks
-  uint32_t delay_ms = 200; ///< Delay between on/off (ms)
-};
+enum class WifiCommand : uint8_t { NONE, CONNECT_NEW };
 
 struct WifiNetwork {
   std::string ssid;
   int         rssi;
   int         channel;
+};
+
+struct WifiRequest {
+  WifiCommand cmd = WifiCommand::NONE;
+  std::string ssid;
+  std::string password;
 };
 
 class WifiManager {
@@ -65,6 +68,8 @@ public:
   [[nodiscard]] WifiMode  get_mode() const;
 
   static WifiManager *get_callback_instance() { return _instance; }
+
+  WifiRequest pending_request;
 
 private:
   static WifiManager *_instance;

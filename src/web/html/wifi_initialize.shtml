@@ -22,7 +22,7 @@
             <label for="pwd">Password</label>
             <input type="password" name="pwd" id="pwd" placeholder="Enter password" required>
             
-            <button type="submit" class="btn btn-connect">Connect Gateway</button>
+            <a href="/wifi_connect.cgi?"><button type="submit" class="btn btn-connect">Connect Gateway</button>
         </form>
         <footer>
             LoRa2MQTT Gateway &bull; Pico2 W

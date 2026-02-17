@@ -1,0 +1,28 @@
+<html><!DOCTYPE html>
+<head>
+    <title>LoRa Gateway Dashboard</title>
+
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+</head>
+<body>
+<div class="card">
+    <h2>Gateway is moving!</h2>
+    <p>The gateway is now connecting to <b><!--#ssid_target--></b>.</p>
+    
+    <div class="status" style="border-left-color: var(--success);">
+        <b>Next Steps:</b>
+        <ol>
+            <li>Wait about 30 seconds.</li>
+            <li>Connect your phone/PC back to your home WiFi.</li>
+            <li>Go to <a href="http://lora-gateway.local">http://lora-gateway.local</a></li>
+        </ol>
+    </div>
+    
+    <p style="font-size: 0.8rem; color: #666;">
+        If you can't find the gateway after 1 minute, it means the password was wrong. 
+        The gateway will reappear here in Setup Mode automatically.
+    </p>
+</div>
+</body>
+</html>
